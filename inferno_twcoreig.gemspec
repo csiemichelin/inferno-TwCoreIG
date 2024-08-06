@@ -1,11 +1,11 @@
 Gem::Specification.new do |spec|
-  spec.name          = 'inferno_template'
+  spec.name          = 'inferno_twcoreig'
   spec.version       = '0.0.1'
-  spec.authors       = ["Inferno Template"]
+  spec.authors       = ["Inferno TWCoreIG"]
   # spec.email         = ['TODO']
   spec.date          = Time.now.utc.strftime('%Y-%m-%d')
-  spec.summary       = 'Inferno Template Test Kit'
-  spec.description   = 'Inferno template Inferno test kit for FHIR'
+  spec.summary       = 'Inferno TWCoreIG Test Kit'
+  spec.description   = 'Inferno twcoreig Inferno test kit for FHIR'
   # spec.homepage      = 'TODO'
   spec.license       = 'Apache-2.0'
   spec.add_runtime_dependency 'inferno_core', '~> 0.4.38'

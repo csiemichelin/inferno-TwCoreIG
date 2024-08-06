@@ -1,6 +1,6 @@
-# Inferno Template Test Kit
+# Inferno TWCoreIG Test Kit
 
-Inferno template [Inferno](https://github.com/inferno-community/inferno-core) Test Kit
+Inferno twcoreig [Inferno](https://github.com/inferno-community/inferno-core) Test Kit
 for FHIR testing.
 
 ## Instructions for Developing Your Test Kit

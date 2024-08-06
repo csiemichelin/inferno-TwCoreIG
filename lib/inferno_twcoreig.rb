@@ -1,10 +1,10 @@
-require_relative 'inferno_template/patient_group'
+require_relative 'inferno_twcoreig/patient_group'
 
-module InfernoTemplate
+module InfernoTWCoreIG
   class Suite < Inferno::TestSuite
-    id :inferno_template_test_suite
-    title 'Inferno Template Test Suite'
-    description 'Inferno template test suite.'
+    id :inferno_twcoreig_test_suite
+    title 'Inferno TWCoreIG Test Suite'
+    description 'Inferno twcoreig test suite.'
 
     # These inputs will be available to all tests in this suite
     input :url,
