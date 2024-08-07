@@ -56,7 +56,7 @@ module InfernoTWCoreIG
       id :tw_core_fhir_api
       title 'TW Core FHIR API'
       description 'Group containing all TW Core FHIR API tests'
-   
+
       # Tests and TestGroups can be defined inline
       group do
         id :capability_statement
