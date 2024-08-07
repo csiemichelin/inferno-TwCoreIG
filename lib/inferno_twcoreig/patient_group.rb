@@ -9,6 +9,15 @@ module InfernoTWCoreIG
       title 'Patient GET Request'
       description 'Patient GET Request'
 
+      # Define inputs here to ensure the correct order
+      input :url,
+      title: 'FHIR Server Base Url'
+        
+      input :credentials,
+      title: 'OAuth Credentials',
+      type: :oauth_credentials,
+      optional: true
+
       # 建議應該（SHOULD） 支援透過查詢參數 _id 查詢所有Patient：
       test do
         title 'Server returns valid results for Patient search by _id'
@@ -23,7 +32,7 @@ module InfernoTWCoreIG
           )
 
         input :patient_id,
-              title: 'Patient ID'
+          title: 'Patient _id'
 
         # Named requests can be used by other tests
         makes_request :patient
@@ -146,9 +155,18 @@ module InfernoTWCoreIG
       title 'Patient POST Request'
       description 'Patient POST Request'
 
+      # Define inputs here to ensure the correct order
+      input :url,
+      title: 'FHIR Server Base Url'
+        
+      input :credentials,
+      title: 'OAuth Credentials',
+      type: :oauth_credentials,
+      optional: true
+
       # 驗證輸入的Resource是否合規
       test do 
-        title 'Patient input resource is valid'
+        title 'Input Patient resource is valid'
         description %(
           Verify that the Patient resource input is a valid FHIR resource.
 
@@ -163,14 +181,17 @@ module InfernoTWCoreIG
         input :patient_resource,
               title: 'Patient Resource'
         
+        output :patient_value
+        
         run do 
           assert_valid_json(patient_resource) # For safety
-          # assert_resource_type('Patient')
-          assert_valid_resource
-          # info(patient_resource.to_json)
-        end
-
-        # assert_valid_resource
+          resource_hash = JSON.parse(patient_resource)
+          patient_resource = FHIR::Patient.new(resource_hash)
+          # output patient_value: patient_resource
+          assert_valid_resource(resource: patient_resource)
+          # if resource_is_valid?(resource: patient_resource)
+          # end
+        end 
       end 
 
       # 驗證輸入的Transaction Bundles(支援多個Resource驗證)是否合規
@@ -179,9 +200,22 @@ module InfernoTWCoreIG
       # end 
 
       # 發送POST請求包含Transaction Bundles(支援多個Resource驗證)的Body給FHIR Server
-      # test do 
+      test do 
+        title 'Send Patient Resource to FHIR Server'
+        description %(
+          Send a input Patient resource to a FHIR server database.
 
-      # end
+          [臺灣核心-病人（TW Core Patient）](https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition-Patient-twcore.html)
+        )
+
+        input :patient_resource,
+              title: 'Patient Resource'
+
+        run do 
+          resource_hash = JSON.parse(patient_resource)
+          fhir_create FHIR::Patient.new(resource_hash)
+        end
+      end
     end
   end
 end
