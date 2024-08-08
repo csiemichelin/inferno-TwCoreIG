@@ -1,6 +1,6 @@
 module InfernoTWCoreIG
   class PatientGroup < Inferno::TestGroup
-    title 'Patient Tests'
+    title 'Patient(臺灣核心-病人) Tests '
     description 'Verify that the server makes Patient resources available'
     id :patient_group
 
@@ -125,6 +125,7 @@ module InfernoTWCoreIG
         end
       end
 
+      # 驗證查詢 _id 的 Patient resource 是否合規
       test do
         title 'Patient resource is valid'
         description %(
@@ -194,12 +195,7 @@ module InfernoTWCoreIG
         end 
       end 
 
-      # 驗證輸入的Transaction Bundles(支援多個Resource驗證)是否合規
-      # test do 
-
-      # end 
-
-      # 發送POST請求包含Transaction Bundles(支援多個Resource驗證)的Body給FHIR Server
+      # 發送POST請求包含Resource Body給FHIR Server
       test do 
         title 'Send Patient Resource to FHIR Server'
         description %(
@@ -213,7 +209,8 @@ module InfernoTWCoreIG
 
         run do 
           resource_hash = JSON.parse(patient_resource)
-          fhir_create FHIR::Patient.new(resource_hash)
+          response = fhir_create FHIR::Patient.new(resource_hash)
+          assert response.status == 201
         end
       end
     end
