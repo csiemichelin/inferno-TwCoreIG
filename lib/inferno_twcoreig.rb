@@ -57,6 +57,21 @@ module InfernoTWCoreIG
       title 'TW Core FHIR API'
       description 'Group containing all TW Core FHIR API tests'
 
+      # These inputs will be available to all tests in this suite
+      # input :url,
+      # title: 'FHIR Server Base Url'
+
+      # input :credentials,
+      # title: 'OAuth Credentials',
+      # type: :oauth_credentials,
+      # optional: true
+
+      # # All FHIR requests in this suite will use this FHIR client
+      # fhir_client do
+      # url :url
+      # oauth_credentials :credentials
+      # end
+
       # Tests and TestGroups can be defined inline
       group do
         id :capability_statement
