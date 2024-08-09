@@ -43,3 +43,6 @@ Level Seven International and their use does not constitute endorsement by HL7.
 
 # TWCoreIG-Validation_Sandboxm
 ![image](https://github.com/user-attachments/assets/952b3af5-3769-40b5-9d13-c592c72074fb)
+
+啟動MongoDB綁定IP: mongod --bind_ip localhost,52-0B20626-H1  
+執行server: sudo python3 -m swagger_server  

@@ -1,13 +1,16 @@
 # -*- coding: UTF-8 -*-
+# 將Request新增到MongoDB，且等待驗證完畢後回傳，並更新數據庫
 import os
 import json
 import uuid
-from flask import jsonify, request, make_response
+import time
+from flask import jsonify, request, make_response, Response
 from threading import Lock
 from __main__ import verification_queue
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-import time
+from collections import OrderedDict
+
 # from queue import Queue
 
 # 創建一個隊列來儲存 待驗證的 JSON 表單和對應的新id
@@ -26,27 +29,9 @@ def generate_short_uuid():
         uuid_part = str(uuid.uuid4())[:4]
         counter_part = str(counter).zfill(6)
         return uuid_part + counter_part
-
-# 輸出Queue的內容
-def print_queue_contents(queue):
-    temp_list = []
-    id_list = []
-    while not queue.empty():
-        item = queue.get()
-        temp_list.append(item)
-    
-    print("Queue contents:")
-    for item in temp_list:
-        # print(item)
-        id_list.append(item[1])  # 只提取bundle_id
-    print(str(id_list))
-    
-    for item in temp_list:
-        queue.put(item)
         
 def create_validations(body):
     body = request.get_json()
-    bundles = body.get('bundles', [])
     request_id = generate_short_uuid()
     # 取得當前時間
     create_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -56,23 +41,14 @@ def create_validations(body):
     db = client['TWCoreIGValidation']
     collection = db['requests']
     
-    # 準備要插入的資料
+    # 將Body內容餵給驗證器
     records = []
-    bundle_ids = []
-    for bundle in bundles:
-        original_id = bundle.get('id', '')
-        generate_id = generate_short_uuid()
-        bundle_id = generate_id + original_id
-        bundle['id'] = bundle_id
-        # 將表單加入到待驗證隊列中
-        verification_queue.put((json.dumps(bundle), bundle_id, request_id))
-        # print("昆霖測試bundle_id = " + str(bundle_id))
-        # print_queue_contents(verification_queue)
-        bundle_ids.append(bundle_id)
+    
+    # 將表單加入到待驗證隊列中
+    verification_queue.put((body, request_id))
         
     records.append({
         'request_id': request_id,
-        'bundle_ids': bundle_ids,
         'create_time': create_time,
     })
 
@@ -100,15 +76,16 @@ def create_validations(body):
             "message": "Validations completed successfully",
             "request_details": {
                 "request_id": inserted_record['request_id'],
-                "bundle_ids": inserted_record['bundle_ids'],
                 "create_time": inserted_record['create_time'],
                 "validation_messages": inserted_record['validation_messages']
             }
         }
-        return jsonify(response), 200
+        json_str = json.dumps(response, ensure_ascii=False)
+        return Response(json_str, mimetype='application/json'), 200
     else:
         response = {
             "message": "Validation results not available within the expected time",
             "request_id": request_id
         }
-        return jsonify(response), 202  # 202 Accepted
+        json_str = json.dumps(response, ensure_ascii=False)
+        return Response(json_str, mimetype='application/json'), 202  # 202 Accepted
