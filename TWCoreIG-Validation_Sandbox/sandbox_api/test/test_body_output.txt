@@ -1,0 +1,37 @@
+"id" : "pat-example01"
+Done. Times: Loading: 01:10.851, validation: 00:00.205. Memory = 651Mb
+
+*FAILURE*: 1 errors, 0 warnings, 0 notes
+  Fatal @ Patients (line 1, col2): This content cannot be parsed (unknown or unrecognized resource name 'Patients')
+Watching for changes (1000ms cycle)
+
+
+"id" : "pat-example02"
+Done. Times: Loading: 01:10.851, validation: 00:22.069 (#2). Memory = 788Mb
+
+*FAILURE*: 3 errors, 0 warnings, 0 notes
+  Error @ Patient.identifier[0].system (line 52, col40): Value is 'http://www.moi.gov.tw/' but must be 'http://www.moi.gov.tw'
+  Error @ Patient.contact[0].name.use (line 153, col21): The value provided ('test') was not found in the value set 'NameUse' (http://hl7.org/fhir/ValueSet/name-use|4.0.1), and a code is required from this value set  (error message = The System URI could not be determined for the code 'test' in the ValueSet 'http://hl7.org/fhir/ValueSet/name-use|4.0.1'; None of the provided codes ['#test'] are in the value set 'http://hl7.org/fhir/ValueSet/name-use|4.0.1')
+  Error @ Patient (line 179, col18): Unrecognized property 'test1'
+Watching for changes (1000ms cycle)
+
+
+"id" : "pat-example03"
+Done. Times: Loading: 01:10.851, validation: 00:23.021 (#5). Memory = 604Mb
+
+*FAILURE*: 2 errors, 0 warnings, 0 notes
+  Error @ Patient.identifier[0].system (line 52, col40): Value is 'http://www.moi.gov.tw/' but must be 'http://www.moi.gov.tw'
+  Error @ Patient.contact[0].name.use (line 153, col21): The value provided ('test') was not found in the value set 'NameUse' (http://hl7.org/fhir/ValueSet/name-use|4.0.1), and a code is required from this value set  (error message = The System URI could not be determined for the code 'test' in the ValueSet 'http://hl7.org/fhir/ValueSet/name-use|4.0.1'; None of the provided codes ['#test'] are in the value set 'http://hl7.org/fhir/ValueSet/name-use|4.0.1')
+Watching for changes (1000ms cycle)
+
+
+"id" : "pat-example04"
+Done. Times: Loading: 01:10.851, validation: 00:23.377 (#6). Memory = 625Mb
+
+Success: 0 errors, 0 warnings, 1 notes
+  Information: All OK
+Watching for changes (1000ms cycle)
+
+
+
+

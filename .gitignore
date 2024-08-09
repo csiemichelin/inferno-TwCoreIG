@@ -18,3 +18,6 @@
 /docs/yard
 .yardoc
 node_modules
+
+/TWCoreIG-Validation_Sandbox/sandbox_api/swagger_server/__pycache__/*
+/TWCoreIG-Validation_Sandbox/sandbox_api/venv/*

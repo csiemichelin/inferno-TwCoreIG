@@ -1,0 +1,34 @@
+openapi: 3.0.0
+info:
+  title: Swagger Server API
+  version: "1.0"
+paths:
+  /validations:
+    post:
+      summary: Create new validations
+      operationId: swagger_server.controllers.validation_controller.create_validations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BundleList'
+      responses:
+        201:
+          description: Validations created
+components:
+  schemas:
+    Bundle:
+      type: object
+      properties:
+        bundle:
+          type: object
+          additionalProperties: true
+          description: Any valid JSON object
+    BundleList:
+      type: object
+      properties:
+        bundles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bundle'

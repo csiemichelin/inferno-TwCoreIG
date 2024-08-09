@@ -1,0 +1,9 @@
+  Validate /home/michelin/TWCoreIG-Validation_Sandbox/sandbox_api/input/bundle-01.json
+Validate Patient against http://hl7.org/fhir/StructureDefinition/Patient|4.0.1..........20..........40..........60..........80.........|
+Validate Patient against https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore..........20..........40..........60..........80.........|
+ 00:00.397
+Done. Times: Loading: 00:28.376, validation: 00:04.710 (#4). Memory = 762Mb
+
+*FAILURE*: 1 errors, 0 warnings, 0 notes
+  Error @ Patient.identifier[0].system (line 67, col47): Value is 'http://www.moi.gov.tw/' but must be 'http://www.moi.gov.tw'
+Watching for changes (1000ms cycle)
