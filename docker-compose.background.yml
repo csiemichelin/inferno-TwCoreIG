@@ -18,17 +18,21 @@ services:
       - ./lib/inferno_twcoreig/igs:/home/igs
   fhir_validator_app:
     image: infernocommunity/fhir-validator-app
-    # depends_on:
-    #   - validator_service
+    depends_on:
+      - validator_service
     environment:
       EXTERNAL_VALIDATOR_URL: http://localhost/validatorapi
       VALIDATOR_BASE_PATH: /validator
   nginx:
     image: nginx
     volumes:
+      # 左邊local對應到右邊container內部的檔案
       - ./config/nginx.background.conf:/etc/nginx/nginx.conf
+      - ./config/development-certs/inferno.crt:/etc/ssl/certs/inferno.crt
+      - ./config/development-certs/inferno.key:/etc/ssl/certs/inferno.key
     ports:
-      - "80:80"
+      # - "80:80" # HTTP
+      - "443:443" # HTTPS
     command: [nginx, '-g', 'daemon off;']
       # depends_on:
       #   - fhir_validator_app
