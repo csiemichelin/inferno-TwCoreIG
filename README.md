@@ -46,3 +46,4 @@ Level Seven International and their use does not constitute endorsement by HL7.
 
 啟動MongoDB綁定IP: mongod --bind_ip localhost,52-0B20626-H1  
 執行server: sudo python3 -m swagger_server  
+Swagger POST Validation API: https://127.0.0.1:10000/validations 

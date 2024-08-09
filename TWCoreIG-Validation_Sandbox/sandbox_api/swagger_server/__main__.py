@@ -15,6 +15,7 @@ from threading import Thread, Lock
 from datetime import datetime, timedelta
 # from swagger_server.controllers.validation_controller import verification_queue
 from queue import Queue
+from flask_cors import CORS
 
 # 創建一個隊列來儲存 待驗證的 JSON 表單和對應的 Request ID
 verification_queue = Queue()
@@ -67,11 +68,11 @@ def print_queue_contents(queue):
 def monitor_validations():
     with lock:  # lock 確保每次只有一個線程能夠執行 monitor_files 函數，從而避免了併發訪問 verification_queue
         # 連接到 MongoDB
-        client = MongoClient('mongodb://192.168.43.135:27017/')
+        client = MongoClient('mongodb://192.168.56.1:27017/')
         db = client['TWCoreIGValidation']
         collection = db['requests']
         
-        print_queue_contents(verification_queue)
+        # print_queue_contents(verification_queue)
         
         # 若Queue中有需要驗證的Resource呼叫驗證API
         if not verification_queue.empty():
@@ -86,6 +87,7 @@ def monitor_validations():
             try:
                 response = requests.post(url, json=bundle_json, headers=headers, verify=False)  # verify=False 用於忽略自簽名證書
                 response_validation_data = response.json()  # 假設 API 返回 JSON 響應
+                # print("bundle_json = " + str(bundle_json))
                 
                 # 提取 response 中的 issue 列表
                 issues = response_validation_data.get("issue", [])
@@ -96,21 +98,28 @@ def monitor_validations():
                     # 初始化 issue-line
                     issue_line = None
                     
-                    print("extension: " + str(issue.get("extension", [])))
+                    # print("extension: " + str(issue.get("extension", [])))
                           
-                    # 遍历 extension 列表
-                    for extension in issue.get("extension", []):
-                        if extension.get("url") == "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line":
-                            issue_line = extension.get("valueInteger")
-                            break  
+                    # # 遍歷 extension 列表取得錯誤行數，但是因為會轉成單一行的JSON，所以可以省略
+                    # for extension in issue.get("extension", []):
+                    #     if extension.get("url") == "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line":
+                    #         issue_line = extension.get("valueInteger")
+                    #         break  
                         
                     # 提取 severity, code, details 信息
-                    extracted_issue = {
-                        "issue-line": issue_line,
-                        "severity": issue.get("severity"),
-                        "code": issue.get("code"),
-                        "details": issue.get("details", {}).get("text")
-                    }
+                    if (issue.get("expression", ' ') == ' '):
+                        extracted_issue = {
+                            "severity": issue.get("severity"),
+                            "code": issue.get("code"),
+                            "details": issue.get("details", {}).get("text")
+                        }
+                    else:
+                        extracted_issue = {
+                            "severity": issue.get("severity"),
+                            "code": issue.get("code"),
+                            "details": issue.get("details", {}).get("text"),
+                            "expression": issue.get("expression", ' ')
+                        }
                     extracted_issues.append(extracted_issue)
                 
                 # 更新 MongoDB 中對應的記錄
@@ -121,6 +130,7 @@ def monitor_validations():
                 
                 # 處理響應
                 # print(f"收到的響應: {response_validation_data}")
+                client.close()
             except requests.exceptions.RequestException as e:
                 print(f"請求發生錯誤: {e}")
 
@@ -138,6 +148,9 @@ def create_app():
         pythonic_params=True,
     )
 
+    # 只允许特定的域名或 IP 地址
+    CORS(app.app, origins=["https://localhost:3000"])
+
     return app
 
 if __name__ == "__main__":
@@ -150,9 +163,10 @@ if __name__ == "__main__":
     scheduler.start() 
     
     # Add scheduled task
-    scheduler.add_job(id='ScheduledTask', func=monitor_validations, trigger='interval', seconds=1)
+    scheduler.add_job(id='ScheduledTask', func=monitor_validations, trigger='interval', seconds=1, max_instances=3600, replace_existing=True)
 
     # Run the Flask application
     api_port = 10000
     # 不能加（debug=True），當 Flask 在偵錯模式下執行時（debug=True），它會啟動兩個程序。一個是主進程，另一個是用於重新載入的子進程。這會導致 initialize() 被呼叫兩次，每次都會建立新的 Queue 實例
     app.run(ssl_context=context, port=api_port, threaded=True)
+    # app.run(port=api_port, threaded=True)

@@ -29,15 +29,27 @@ def generate_short_uuid():
         uuid_part = str(uuid.uuid4())[:4]
         counter_part = str(counter).zfill(6)
         return uuid_part + counter_part
-        
+
+def get_all_entries():
+    try:
+        client = MongoClient('mongodb://192.168.56.1:27017/')
+        db = client['TWCoreIGValidation']
+        collection = db['requests']
+        # 從 MongoDB 查詢所有文檔
+        documents = list(collection.find({}, {'_id': False}))  # 不返回 _id 字段
+        return jsonify(documents)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 def create_validations(body):
     body = request.get_json()
+    # print("body = " + str(body))
     request_id = generate_short_uuid()
     # 取得當前時間
     create_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # 連接到 MongoDB
-    client = MongoClient('mongodb://192.168.43.135:27017/')
+    client = MongoClient('mongodb://192.168.56.1:27017/')
     db = client['TWCoreIGValidation']
     collection = db['requests']
     
@@ -50,6 +62,7 @@ def create_validations(body):
     records.append({
         'request_id': request_id,
         'create_time': create_time,
+        "transaction_bundles": body,
     })
 
     # request_id 對應到多個bundle_id，寫到mongoDB裡
